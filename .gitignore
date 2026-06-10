@@ -18,8 +18,8 @@ __pycache__/
 .idea/
 .vscode/
 
-# Claude internal
-CLAUDE.md
+# Claude internal (root only)
+/CLAUDE.md
 
 # Root-level scratch files
-eda.ipynb
+/eda.ipynb
