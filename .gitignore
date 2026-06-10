@@ -1,0 +1,25 @@
+# Raw data — not committed to repo
+assignment_instructions/
+
+# OS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# IDE
+.idea/
+.vscode/
+
+# Claude internal
+CLAUDE.md
+
+# Root-level scratch files
+eda.ipynb
