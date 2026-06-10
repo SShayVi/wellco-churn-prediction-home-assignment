@@ -18,11 +18,17 @@ Located in ~/assignment_instructions
 
 ## Output Directory
 All deliverables live in `Shay_Assignment/`:
-- `eda.ipynb` — exploratory data analysis notebook
+- `01_eda.ipynb` — exploratory data analysis notebook
 - `requirements.txt` — Python dependencies
-- (future) feature engineering, modeling, and scoring notebooks
+- (future) `02_features.ipynb`, `03_model.ipynb`, `04_outreach_sizing.ipynb`
 - (future) `predictions.csv` — top n test members for outreach
 - (future) executive presentation slides
+
+## Claude Code Usage (`claude_code_util/`)
+`Shay_Assignment/claude_code_util/` documents how Claude Code was used throughout this project. Keep it up to date as the project progresses:
+- `README.md` — narrative of what Claude Code did at each phase (environment setup, debugging, EDA, git/GitHub, memory)
+- `CLAUDE.md` — snapshot of the project brain (copy of root CLAUDE.md); **update this copy after each phase** so the repo always reflects the current accumulated context
+- Add any other Claude Code artifacts here (e.g. memory files, session highlights) that are worth showcasing
 
 ## Required Deliverables
 1. ✅ Public Git repository with reproducible end-to-end solution — https://github.com/SShayVi/wellco-churn-prediction-home-assignment
@@ -86,7 +92,35 @@ All deliverables live in `Shay_Assignment/`:
 - Use **membership tenure** (days since signup as of Jul 15) — strong predictor via cohort analysis
 - Outreach column: include in model training only to model its effect, then score test members **without** it (they haven't received outreach yet)
 
+## Model Results (Phase 3)
+
+### Performance
+- **OOF AUC: 0.644** | Mean CV AUC: 0.660 ± 0.016
+- **OOF PR-AUC: 0.306** | Mean CV PR-AUC: 0.332 ± 0.015
+- 5-fold stratified CV; `is_unbalance=True`; early stopping per fold
+- Final model trained on all 10k members at mean best iteration (48 trees)
+
+### Primary metric rationale
+AUC-ROC chosen because the task is **ranking** (who to outreach), not threshold classification. PR-AUC reported alongside as a secondary metric given the 20% class imbalance.
+
+### Top features (by split importance)
+1. `tenure_days` — strongest signal (newer members churn ~3× more)
+2. `health_content_ratio` — NLP: share of health-content web visits
+3. `lsa_1`–`lsa_5` — latent semantic components from web visit text
+4. `session_std_daily`, `session_cv` — variance in app engagement patterns
+5. `outreach` — included in training, set to 0 at scoring time
+
+### Outreach treatment effect
+- Mean predicted churn reduction from outreach: **2.75 pp**
+- 76.4% of members show positive predicted effect from outreach
+- Effect is heterogeneous (max 29.7pp reduction for highest-risk members)
+
+### Scoring
+- Test members scored with `outreach=0` (pre-outreach churn risk)
+- Score range: 0.098–0.754; saved to `predictions.csv`
+
 ## Rules
 - Never proceed to the next phase without my approval
 - After each phase, summarize findings and wait for my go-ahead
 - Python only: pandas, lightgbm, matplotlib, scikit-learn
+- Git: `git push` is allowed freely; never run `git pull` — user approves incoming changes on GitHub
